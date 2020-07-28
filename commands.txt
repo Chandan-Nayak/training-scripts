@@ -1,0 +1,15 @@
+IAM:
+
+Iam commands
+$ aws iam create-user --user-name jack@cnayak.com
+$ aws iam list-users
+
+
+S3 commands
+$ aws s3 ls
+$ aws s3 cp index.html s3://training-july/new.html
+$ aws s3 cp index.html s3://training-july/new.html demo.html
+$ aws s3 mv s3://training-july/new.html s3://training-july/new1.html
+$ aws s3 rm s3://training-july/new1.html
+$ aws s3api list-object-versions --bucket training-july --prefix version.txt
+$ aws s3api get-object --bucket training-july --key version.txt new.txt --version-id w2rHseooJkkqfPJFAGIyCV2HCsdg53HR
