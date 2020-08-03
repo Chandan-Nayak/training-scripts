@@ -1,0 +1,12 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Lets Create a dummy CF template for s3",
+        "Resources": {
+            "s3BucketPractice": {
+                "Type": "AWS::S3::Bucket",
+                "Properties" : {
+                    "Tags" : [ { "Key" : "ENV", "Value" : "Stage" } ]
+                  }
+            }
+        }
+}

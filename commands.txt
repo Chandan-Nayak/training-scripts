@@ -13,3 +13,26 @@ $ aws s3 mv s3://training-july/new.html s3://training-july/new1.html
 $ aws s3 rm s3://training-july/new1.html
 $ aws s3api list-object-versions --bucket training-july --prefix version.txt
 $ aws s3api get-object --bucket training-july --key version.txt new.txt --version-id w2rHseooJkkqfPJFAGIyCV2HCsdg53HR
+
+CF
+--
+aws cloudformation validate-template --template-body file://cf-instance.json
+
+aws cloudformation create-stack --stack-name demo-s3 --template-body file://cf-hello.json
+aws cloudformation update-stack --stack-name demo-s3 --template-body file://cf-hello.json
+aws cloudformation delete-stack --stack-name my-stack
+
+aws cloudformation list-stacks --stack-status-filter DELETE_COMPLETE
+aws cloudformation list-stacks --stack-status-filter CREATE_IN_PROGRESS
+aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
+
+
+TF
+--
+terraform fmt
+terraform validate
+terraform init
+terraform plan
+terraform apply -auto-approve
+
+go test filename -v
