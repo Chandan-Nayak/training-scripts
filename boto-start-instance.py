@@ -7,5 +7,9 @@ result = ec2.instances.filter(Filters=[
     {"Name":"tag:"+tagname, 'Values':[tagvalue]},
     {'Name': 'instance-state-name', 'Values': ['stopped']}
 ]).start()
+    
 
-print(result)
+if result:
+    print("Instance start command triggered")
+else:
+    print("Could not filter instance, Instance might already be running")
