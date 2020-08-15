@@ -1,0 +1,38 @@
+pipeline{
+    agent any
+    environment {
+        USER_NAME = "chandan"
+        PASSWORD = "mysecretpass"
+    }
+    
+    
+    stages{
+        stage("Git clone"){
+            steps{
+                echo "========executing Git clone========"
+                sh "echo $USER_NAME / $PASSWORD"
+                git 'https://github.com/Chandan-Nayak/training-scripts'
+                
+            }
+        }
+        
+        stage("Check files"){
+            steps{
+                echo "========executing Check files========"
+                sh "ls -ltr"
+                
+            }
+        }
+    }
+    post{
+        always{
+            echo "========always========"
+        }
+        success{
+            echo "========pipeline executed successfully ========"
+        }
+        failure{
+            echo "========pipeline execution failed========"
+        }
+    }
+}

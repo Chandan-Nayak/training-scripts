@@ -1,0 +1,133 @@
+pipeline {
+  
+  agent any
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr:'10'))
+    timeout(time: 1, unit: 'HOURS')
+  }
+  
+  environment {
+    name = 'demo'
+    region = 'ap-south-1'
+  }
+   
+  stages {
+    
+    stage('setup') {
+      steps {
+        catchError {
+          echo '!---SETUP---!'
+          //library 'my-test-library'
+          echo 'load library!'
+        }
+      }
+    }
+
+    stage('tf-init') {
+        steps {
+          catchError {
+            echo '!---INIT---!'
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+              {
+                script {
+                    sh "/Users/chandan/Documents/binaries/terraform init"
+                }
+              }
+          }     
+        }
+    }
+
+    stage('tf-plan') {
+        steps {
+          catchError {
+            echo '!---PLAN---!'
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+              {
+                script {
+                    sh '/Users/chandan/Documents/binaries/terraform plan -no-color' 
+                }
+              }
+            }
+        }
+    }
+
+    stage('tf-apply') {
+        steps {
+            catchError {
+                echo '!---APPLY---!'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+                    {
+
+                        script {
+                            def userInput = input(
+                            id: 'Password', message: 'Do you want to Apply the change? Accepted values: Yes / No : ', ok: 'Apply', parameters: [string(defaultValue: 'Yes', description: 'Have a look at terraform plan outout and decide', name: 'Terraform Apply Check Gate')]
+                            )
+                            echo ("Respose was: " + userInput)
+                            if (userInput == "Yes") {
+                                echo 'Run terraform appply here'
+                                sh '/Users/chandan/Documents/binaries/terraform apply -auto-approve'
+                            }
+                            else {
+                                echo 'terraform apply was cancelled'
+                            }
+                        }
+
+                    }
+            }
+        }
+    }
+
+     stage('tf-destroy') {
+        steps {
+            catchError {
+                echo '!---DESTROY---!'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+                    {
+
+                        script {
+                            def userInput = input(
+                            id: 'Password', message: 'Do you want Destroy, Accepted values: Yes / No ?: ', ok: 'Apply', parameters: [string(defaultValue: 'Yes', description: 'Verify and Confirm if you want to delete the stack', name: 'Terraform Destroy Check Gate')]
+                            )
+                            echo ("Respose was: " + userInput)
+                            if (userInput == "Yes") {
+                                echo 'Run terraform destroy here'
+                                sh '/Users/chandan/Documents/binaries/terraform destroy -auto-approve'
+                            }
+                            else {
+                                echo 'terraform destroy was cancelled, you need to delete it manuall'
+                            }
+                        }
+
+                    }
+            }
+        }
+    }   
+
+
+  }
+
+  post{
+
+    always{
+      deleteDir()
+      echo 'ALWAYS'
+    }
+    
+    failure{
+      echo 'FAILURE'
+      script {
+      currentBuild.result = 'FAILURE'
+      }
+    }
+
+    success{
+      echo 'SUCCESS'
+      script {
+        currentBuild.result = 'SUCCESS'
+      }
+    }
+
+  }
+
+}

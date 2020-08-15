@@ -36,3 +36,41 @@ terraform plan
 terraform apply -auto-approve
 
 go test filename -v
+
+git
+---
+git config user.name "Chandan Nayak"
+git config user.email "chandan.phoenix@gmail.com"
+
+git config --edit --local
+git config --edit --global
+
+
+
+SHA1
+----
+echo "demo" | git hash-object --stdin
+echo "demo" | git hash-object --stdin -w
+git cat-file SHA1 -p
+git hash-object -w test.txt
+
+
+git init
+echo "demo" | git hash-object --stdin -w
+git cat-file SHA1 -t
+git cat-file SHA1 -p
+
+git count-objects
+
+watch tree -C .git/objects 
+
+
+
+
+git branch
+----------
+git branch demo
+git checkout demo
+git checkout -b demo1
+git branch -d demo
+git branch -m demo newdemo
